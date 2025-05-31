@@ -2,6 +2,7 @@ import express from 'express';
 import { body, param, query } from 'express-validator';
 
 import { getFlights, createFlight, updateFlight, deleteFlight, searchFlights } from '../controllers/flight';
+import auth from '../middlewares/auth';
 
 const router = express.Router();
 
@@ -9,6 +10,7 @@ router
   .route('/')
   .get(getFlights)
   .post(
+    auth,
     [
       body('price').exists().isFloat({ min: 0 }),
       body('seats_total').exists().isInt(),
@@ -32,8 +34,8 @@ router.get(
 
 router
   .route('/:id')
-  .get(getFlights)
   .put(
+    auth,
     [
       param('id').exists().isInt(),
       body('price').optional().isNumeric(),
@@ -45,6 +47,6 @@ router
     ],
     updateFlight,
   )
-  .delete(deleteFlight);
+  .delete(auth, [param('id').exists().isInt()], deleteFlight);
 
 export default router;

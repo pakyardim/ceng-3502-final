@@ -3,6 +3,7 @@ import request from 'supertest';
 import app from '../../app';
 import { pool } from '../config/database';
 import { aFlight, createFlight } from './helpers/flights';
+import { requestWithAuth } from './helpers/auth';
 
 describe('Flights', () => {
   beforeEach(async () => {
@@ -57,7 +58,7 @@ describe('Flights', () => {
 
   it('should create a flight', async () => {
     const flightData = aFlight({ price: 250 });
-    const response = await request(app).post('/api/flights').send(flightData);
+    const response = await requestWithAuth(app).post('/api/flights').send(flightData);
 
     expect(response.status).toBe(201);
     expect(response.body).toEqual(
@@ -74,7 +75,7 @@ describe('Flights', () => {
 
   it('should handle flight creation errors', async () => {
     const flightData = aFlight({ price: -100 });
-    const response = await request(app).post('/api/flights').send(flightData);
+    const response = await requestWithAuth(app).post('/api/flights').send(flightData);
 
     expect(response.status).toBe(400);
     expect(response.body).toEqual(
@@ -88,7 +89,9 @@ describe('Flights', () => {
     const createdFlight = await createFlight(aFlight({ price: 300 }));
 
     const updatedFlight = aFlight({ price: 350 });
-    const response = await request(app).put(`/api/flights/${createdFlight.insertId}`).send(updatedFlight);
+    const response = await requestWithAuth(app)
+      .put(`/api/flights/${createdFlight.insertId}`)
+      .send(updatedFlight);
 
     expect(response.status).toBe(200);
 
@@ -107,7 +110,7 @@ describe('Flights', () => {
   it('should delete a flight', async () => {
     const createdFlight = await createFlight(aFlight());
 
-    const response = await request(app).delete(`/api/flights/${createdFlight.insertId}`);
+    const response = await requestWithAuth(app).delete(`/api/flights/${createdFlight.insertId}`);
 
     expect(response.status).toBe(204);
 
