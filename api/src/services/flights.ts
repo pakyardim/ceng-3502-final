@@ -3,6 +3,8 @@ import { ResultSetHeader } from 'mysql2';
 import { pool } from '../config/database';
 import { Flight } from '../models/flights';
 
+interface IFlight extends Flight, ResultSetHeader {}
+
 export const fetchFlights = async (from_city?: number, to_city?: number, departure_time?: Date) => {
   try {
     const query = `
@@ -76,4 +78,9 @@ export const deleteFlightById = async (id: number) => {
   } catch (error) {
     throw new Error('Failed to delete flight');
   }
+};
+
+export const fetchFlightById = async (id: number) => {
+  const [rows] = await pool.execute<IFlight[]>('SELECT * FROM flights WHERE id = ?', [id]);
+  return rows[0];
 };

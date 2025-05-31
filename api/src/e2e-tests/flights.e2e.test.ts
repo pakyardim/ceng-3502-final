@@ -89,9 +89,7 @@ describe('Flights', () => {
     const createdFlight = await createFlight(aFlight({ price: 300 }));
 
     const updatedFlight = aFlight({ price: 350 });
-    const response = await requestWithAuth(app)
-      .put(`/api/flights/${createdFlight.insertId}`)
-      .send(updatedFlight);
+    const response = await requestWithAuth(app).put(`/api/flights/${createdFlight.id}`).send(updatedFlight);
 
     expect(response.status).toBe(200);
 
@@ -110,13 +108,13 @@ describe('Flights', () => {
   it('should delete a flight', async () => {
     const createdFlight = await createFlight(aFlight());
 
-    const response = await requestWithAuth(app).delete(`/api/flights/${createdFlight.insertId}`);
+    const response = await requestWithAuth(app).delete(`/api/flights/${createdFlight.id}`);
 
     expect(response.status).toBe(204);
 
     const getResponse = await request(app).get('/api/flights');
     expect(getResponse.body).toEqual(
-      expect.not.arrayContaining([expect.objectContaining({ id: createdFlight.insertId })]),
+      expect.not.arrayContaining([expect.objectContaining({ id: createdFlight.id })]),
     );
   });
 });
