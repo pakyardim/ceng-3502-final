@@ -17,15 +17,18 @@ describe('Flights', () => {
 
   it('should fetch all available flights', async () => {
     await createFlight(aFlight({ price: 300 }));
-    const response = await request(app).get('/api/flights');
+    const response = await request(app).get('/api/flights?skip=0&limit=10');
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          price: 300,
-        }),
-      ]),
+      expect.objectContaining({
+        flights: expect.arrayContaining([
+          expect.objectContaining({
+            price: 300,
+          }),
+        ]),
+        hasMore: false,
+      }),
     );
   });
 

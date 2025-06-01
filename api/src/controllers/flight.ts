@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 
 import { FlightModel } from '../models/flights';
 import { checkValidationError } from '../utils/validation';
-import { create, deleteFlightById, fetchFlights, update } from '../services/flights';
+import { create, deleteFlightById, fetchFlights, update, fetchAllFlights } from '../services/flights';
 
 export const createFlight = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -29,8 +29,15 @@ export const createFlight = async (req: Request, res: Response, next: NextFuncti
 
 export const getFlights = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const flights = await fetchFlights();
-    res.status(200).send(flights);
+    checkValidationError(req);
+    const skip = (req.query.skip as string) || '0';
+    const limit = (req.query.limit as string) || '10';
+
+    const flights = await fetchAllFlights(skip, limit);
+
+    const hasMore = flights.length === parseInt(limit);
+
+    res.status(200).send({ flights, hasMore });
   } catch (error) {
     next(error);
   }

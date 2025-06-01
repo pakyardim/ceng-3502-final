@@ -5,17 +5,42 @@ import { Flight } from '../models/flights';
 
 interface IFlight extends Flight, ResultSetHeader {}
 
+export const fetchAllFlights = async (skip: string, limit: string) => {
+  try {
+    const query = `
+      SELECT f.*, c.name AS from_city_name, c2.name AS to_city_name, COUNT(t.id) AS booked_seats
+      FROM flights f
+      LEFT JOIN tickets t ON f.id = t.flight_id
+      LEFT JOIN cities c ON f.from_city = c.id
+      LEFT JOIN cities c2 ON f.to_city = c2.id
+      WHERE f.departure_time > NOW()
+      GROUP BY f.id, c.name, c2.name
+      HAVING booked_seats < f.seats_total
+
+      ORDER BY f.departure_time DESC
+      LIMIT ?, ?;
+    `;
+
+    const [rows] = await pool.execute<IFlight[]>(query, [skip?.toString(), limit?.toString()]);
+    return rows;
+  } catch (error) {
+    throw new Error('Failed to search flights');
+  }
+};
+
 export const fetchFlights = async (from_city?: number, to_city?: number, departure_time?: Date) => {
   try {
     const query = `
-      SELECT f.*, COUNT(t.id) AS booked_seats
+      SELECT f.*, c.name AS from_city_name, c2.name AS to_city_name, COUNT(t.id) AS booked_seats
       FROM flights f
       LEFT JOIN tickets t ON f.id = t.flight_id
+      LEFT JOIN cities c ON f.from_city = c.id
+      LEFT JOIN cities c2 ON f.to_city = c2.id
       WHERE f.departure_time > NOW()
       ${from_city ? 'AND f.from_city = ?' : ''}
       ${to_city ? 'AND f.to_city = ?' : ''}
       ${departure_time ? 'AND DATE(f.departure_time) = ?' : ''}
-      GROUP BY f.id
+      GROUP BY f.id, c.name, c2.name
       HAVING booked_seats < f.seats_total;
     `;
 

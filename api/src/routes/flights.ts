@@ -8,7 +8,7 @@ const router = express.Router();
 
 router
   .route('/')
-  .get(getFlights)
+  .get([query('skip').optional().isString(), query('limit').optional().isString()], getFlights)
   .post(
     auth,
     [
