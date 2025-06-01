@@ -3,6 +3,10 @@ import { Footer } from '@/components/footer';
 import { Header } from '@/components/header';
 import { SearchForm } from '@/components/search';
 import { FlightCard } from '@/components/flight-card';
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
+import { fetchAllFlights } from '@/fetchers/flights';
+import { Spinner } from '@/components/ui/spinner';
+import { fetchCities } from '@/fetchers/cities';
 
 const flightColors = [
   'from-blue-500 to-purple-600',
@@ -13,76 +17,28 @@ const flightColors = [
   'from-violet-500 to-purple-600',
 ];
 
-const flights = [
-  {
-    id: 1,
-    from: 'New York (NYC)',
-    to: 'London (LHR)',
-    price: '$599',
-    date: 'Dec 15, 2024',
-    time: '8:30 AM - 8:45 PM',
-    duration: '7h 15m',
-    airline: 'British Airways',
-    stops: 'Non-stop',
-  },
-  {
-    id: 2,
-    from: 'Los Angeles (LAX)',
-    to: 'Tokyo (NRT)',
-    price: '$899',
-    date: 'Dec 16, 2024',
-    time: '11:00 AM - 3:30 PM+1',
-    duration: '11h 30m',
-    airline: 'Japan Airlines',
-    stops: 'Non-stop',
-  },
-  {
-    id: 3,
-    from: 'Chicago (ORD)',
-    to: 'Paris (CDG)',
-    price: '$749',
-    date: 'Dec 17, 2024',
-    time: '6:15 PM - 12:30 PM+1',
-    duration: '8h 15m',
-    airline: 'Air France',
-    stops: 'Non-stop',
-  },
-  {
-    id: 4,
-    from: 'Miami (MIA)',
-    to: 'Barcelona (BCN)',
-    price: '$679',
-    date: 'Dec 18, 2024',
-    time: '10:45 PM - 3:15 PM+1',
-    duration: '8h 30m',
-    airline: 'Iberia',
-    stops: 'Non-stop',
-  },
-  {
-    id: 5,
-    from: 'San Francisco (SFO)',
-    to: 'Amsterdam (AMS)',
-    price: '$829',
-    date: 'Dec 19, 2024',
-    time: '1:20 PM - 10:45 AM+1',
-    duration: '10h 25m',
-    airline: 'KLM',
-    stops: 'Non-stop',
-  },
-  {
-    id: 6,
-    from: 'Boston (BOS)',
-    to: 'Rome (FCO)',
-    price: '$699',
-    date: 'Dec 20, 2024',
-    time: '9:30 PM - 2:15 PM+1',
-    duration: '8h 45m',
-    airline: 'Alitalia',
-    stops: 'Non-stop',
-  },
-];
-
 export default function Home() {
+  const { data: citiesData } = useQuery({
+    queryKey: ['cities'],
+    queryFn: fetchCities,
+  });
+
+  const { data, status, fetchNextPage, isFetchingNextPage, refetch } = useInfiniteQuery({
+    queryKey: ['allFlights'],
+    queryFn: fetchAllFlights,
+    initialPageParam: 0,
+    getNextPageParam: (lastPage, pages) => {
+      const currentFlightCount = pages.flatMap((page) => page.flights).length;
+
+      return lastPage.hasMore ? currentFlightCount : undefined;
+    },
+  });
+
+  const cities = citiesData || [];
+
+  const flights = data?.pages.flatMap((page) => page.flights) || [];
+  const hasMore = data?.pages[data.pages.length - 1]?.hasMore;
+
   return (
     <div className="w-screen min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
       <Header />
@@ -106,7 +62,7 @@ export default function Home() {
               </p>
             </div>
 
-            <SearchForm />
+            <SearchForm cities={cities} />
           </div>
         </div>
       </section>
@@ -121,16 +77,48 @@ export default function Home() {
           </div>
 
           <div className="grid gap-6 max-w-4xl mx-auto">
-            {flights.map((flight) => (
-              <FlightCard key={flight.id} color={flightColors[flight.id % flightColors.length]} {...flight} />
-            ))}
+            {status === 'pending' && (
+              <div className="w-full flex justify-center">
+                <Spinner />
+              </div>
+            )}
+            {status === 'error' && (
+              <div className="text-red-500 text-center">
+                <p>Error loading flights. Please try again later.</p>
+                <Button variant="outline" size="lg" onClick={() => refetch()}>
+                  Retry
+                </Button>
+              </div>
+            )}
+            {status === 'success' && flights.length === 0 && (
+              <div className="text-gray-500 text-center">
+                <p>No flights available at the moment. Please check back later.</p>
+              </div>
+            )}
+            {status === 'success' &&
+              flights?.length > 0 &&
+              flights.map((flight) => (
+                <FlightCard
+                  key={flight.id}
+                  color={flightColors[flight.id % flightColors.length]}
+                  {...flight}
+                />
+              ))}
           </div>
 
-          <div className="text-center mt-8">
-            <Button variant="outline" size="lg" className="border-blue-300 text-blue-600 hover:bg-blue-50">
-              Load More Flights
-            </Button>
-          </div>
+          {status === 'success' && flights?.length > 0 && hasMore && (
+            <div className="text-center mt-8">
+              <Button
+                onClick={() => fetchNextPage()}
+                disabled={isFetchingNextPage}
+                variant="outline"
+                size="lg"
+                className="border-blue-300 text-blue-600 hover:bg-blue-50"
+              >
+                Load More Flights
+              </Button>
+            </div>
+          )}
         </div>
       </section>
 
