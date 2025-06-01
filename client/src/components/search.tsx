@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { CalendarDays, Search } from 'lucide-react';
+import { useNavigate } from 'react-router';
 
 import { Label } from '@/components/ui/label';
 import { Calendar } from '@/components/ui/calendar';
@@ -20,6 +21,14 @@ export function SearchForm({ cities }: Props) {
   const [fromCity, setFromCity] = useState('');
   const [toCity, setToCity] = useState('');
 
+  const navigate = useNavigate();
+
+  const handleSearch = () => {
+    const formattedDate = date?.toLocaleDateString('sv-SE');
+
+    navigate(`/flights?to_city=${toCity}&from_city=${fromCity}&date=${formattedDate}`);
+  };
+
   return (
     <Card className="max-w-3xl mx-auto shadow-2xl border-0 bg-white/95 backdrop-blur-sm">
       <CardContent className="p-6">
@@ -29,7 +38,7 @@ export function SearchForm({ cities }: Props) {
               From
             </Label>
             <Combobox
-              options={cities}
+              options={cities.filter((i) => i.id !== Number(toCity))}
               selectedValue={cities.find((i) => i.id === Number(fromCity))?.name || ''}
               setSelectedValue={(value) => {
                 setFromCity(value);
@@ -43,7 +52,7 @@ export function SearchForm({ cities }: Props) {
               To
             </Label>
             <Combobox
-              options={cities}
+              options={cities.filter((i) => i.id !== Number(fromCity))}
               selectedValue={cities.find((i) => i.id === Number(toCity))?.name || ''}
               setSelectedValue={(value) => {
                 setToCity(value);
@@ -78,6 +87,8 @@ export function SearchForm({ cities }: Props) {
         <Button
           className="w-full mt-6 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg"
           size="lg"
+          onClick={handleSearch}
+          disabled={!fromCity || !toCity || !date}
         >
           <Search className="mr-2 h-4 w-4" />
           Search Flights

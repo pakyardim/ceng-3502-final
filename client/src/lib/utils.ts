@@ -39,3 +39,12 @@ export function findTimeDifference(departureTime: Date | string, arrivalTime: Da
 
   return `${hours}h ${minutes}m`;
 }
+
+export const FLIGHT_COLORS = [
+  'from-blue-500 to-purple-600',
+  'from-emerald-500 to-teal-600',
+  'from-orange-500 to-red-600',
+  'from-pink-500 to-rose-600',
+  'from-indigo-500 to-blue-600',
+  'from-violet-500 to-purple-600',
+];

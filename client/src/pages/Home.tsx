@@ -1,21 +1,11 @@
 import { Button } from '@/components/ui/button';
-import { Footer } from '@/components/footer';
-import { Header } from '@/components/header';
 import { SearchForm } from '@/components/search';
 import { FlightCard } from '@/components/flight-card';
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { fetchAllFlights } from '@/fetchers/flights';
 import { Spinner } from '@/components/ui/spinner';
 import { fetchCities } from '@/fetchers/cities';
-
-const flightColors = [
-  'from-blue-500 to-purple-600',
-  'from-emerald-500 to-teal-600',
-  'from-orange-500 to-red-600',
-  'from-pink-500 to-rose-600',
-  'from-indigo-500 to-blue-600',
-  'from-violet-500 to-purple-600',
-];
+import { FLIGHT_COLORS } from '@/lib/utils';
 
 export default function Home() {
   const { data: citiesData } = useQuery({
@@ -40,9 +30,7 @@ export default function Home() {
   const hasMore = data?.pages[data.pages.length - 1]?.hasMore;
 
   return (
-    <div className="w-screen min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-      <Header />
-
+    <>
       <section className="relative">
         <div className="relative h-[500px] overflow-hidden">
           <img
@@ -100,7 +88,7 @@ export default function Home() {
               flights.map((flight) => (
                 <FlightCard
                   key={flight.id}
-                  color={flightColors[flight.id % flightColors.length]}
+                  color={FLIGHT_COLORS[flight.id % FLIGHT_COLORS.length]}
                   {...flight}
                 />
               ))}
@@ -121,8 +109,6 @@ export default function Home() {
           )}
         </div>
       </section>
-
-      <Footer />
-    </div>
+    </>
   );
 }

@@ -59,7 +59,6 @@ export function Combobox({
             onValueChange={(value) => setSearchValue(value)}
           />
           <CommandList>
-            {/* <ScrollArea className="h-auto"> */}
             <CommandEmpty>No results found.</CommandEmpty>
             <CommandGroup>
               {filteredOptions.map(({ id, name }) =>
@@ -79,7 +78,6 @@ export function Combobox({
                 ) : null,
               )}
             </CommandGroup>
-            {/* </ScrollArea> */}
           </CommandList>
         </Command>
       </PopoverContent>
