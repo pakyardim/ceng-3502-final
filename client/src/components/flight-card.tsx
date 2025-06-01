@@ -1,0 +1,53 @@
+import { Plane } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+
+interface Props {
+  color: string;
+  from: string;
+  to: string;
+  airline: string;
+  stops: string;
+  time: string;
+  duration: string;
+  date: string;
+  price: string;
+}
+
+export function FlightCard({ color, from, to, time, duration, date, price }: Props) {
+  return (
+    <Card className="hover:shadow-xl transition-all duration-300 border-0 overflow-hidden group">
+      <div className={`h-1 bg-gradient-to-r ${color}`} />
+      <CardContent className="p-6 bg-white group-hover:bg-gray-50 transition-colors">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="flex-1">
+            <div className="flex items-center gap-4 mb-2">
+              <div className="text-lg font-semibold text-gray-800">{from}</div>
+              <div className={`p-1 rounded-full bg-gradient-to-r ${color}`}>
+                <Plane className="h-3 w-3 text-white" />
+              </div>
+              <div className="text-lg font-semibold text-gray-800">{to}</div>
+            </div>
+            <div className="text-sm text-gray-600 mb-1 font-medium">FlyTicket Airlines • Non-stop</div>
+            <div className="text-sm text-gray-500">
+              {time} • {duration}
+            </div>
+          </div>
+
+          <div className="flex flex-col md:flex-row md:items-center gap-4">
+            <div className="text-center md:text-right">
+              <div className="text-sm text-gray-500 font-medium">{date}</div>
+              <div className={`text-2xl font-bold bg-gradient-to-r ${color} bg-clip-text text-transparent`}>
+                {price}
+              </div>
+              <div className="text-xs text-gray-400">per person</div>
+            </div>
+            <Button className={`md:ml-4 bg-gradient-to-r ${color} hover:opacity-90 text-white shadow-md`}>
+              Select Flight
+            </Button>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
