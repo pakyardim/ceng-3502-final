@@ -15,7 +15,7 @@ router
       body('passenger_surname').trim().exists().isString(),
       body('passenger_email').trim().exists().isEmail(),
       body('flight_id').exists().isInt(),
-      body('seat_number').exists().isInt(),
+      body('seat_number').optional().isInt(),
     ],
     createTicket,
   );

@@ -1,4 +1,4 @@
-import { Plane } from 'lucide-react';
+import { Logo } from './logo';
 
 export function Footer() {
   return (
@@ -7,10 +7,7 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
             <div className="flex items-center space-x-2 mb-4">
-              <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg">
-                <Plane className="h-5 w-5 text-white" />
-              </div>
-              <span className="text-xl font-bold">FlyTicket</span>
+              <Logo />
             </div>
             <p className="text-sm text-gray-300">
               Your trusted partner for finding the best flight deals worldwide.

@@ -4,7 +4,6 @@ export interface Ticket {
   passenger_surname: string;
   passenger_email: string;
   flight_id: number;
-  seat_number: number;
 }
 
 export class TicketModel implements Ticket {
@@ -13,6 +12,5 @@ export class TicketModel implements Ticket {
     public passenger_surname: string,
     public passenger_email: string,
     public flight_id: number,
-    public seat_number: number,
   ) {}
 }

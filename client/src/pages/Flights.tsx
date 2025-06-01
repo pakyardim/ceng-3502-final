@@ -7,9 +7,13 @@ import { DetailedFlightCard } from '@/components/detailed-flight-card';
 import { FLIGHT_COLORS } from '@/lib/utils';
 import { fetchCities } from '@/fetchers/cities';
 import { FlightsSearchForm } from '@/components/flights-search';
+import { useState } from 'react';
+import { FlightDialog } from '@/components/flight-dialog';
 
 export default function FlightResultsPage() {
   const [searchParams] = useSearchParams();
+  const [selectedFlight, setSelectedFlight] = useState<Flight | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const fromCity = searchParams.get('from_city') || '';
   const toCity = searchParams.get('to_city') || '';
@@ -29,6 +33,11 @@ export default function FlightResultsPage() {
         departure_time: date,
       }),
   });
+
+  const handleSelectFlight = (flight: Flight) => {
+    setSelectedFlight(flight);
+    setIsModalOpen(true);
+  };
 
   const flights = data || [];
   const cities = citiesData || [];
@@ -79,6 +88,7 @@ export default function FlightResultsPage() {
                       departure_time={flight.departure_time}
                       color={FLIGHT_COLORS[flight.id % FLIGHT_COLORS.length]}
                       price={flight.price}
+                      onSelectFlight={() => handleSelectFlight(flight)}
                     />
                   ))}
                 </div>
@@ -87,6 +97,13 @@ export default function FlightResultsPage() {
           </div>
         </div>
       </section>
+
+      <FlightDialog
+        isModalOpen={isModalOpen}
+        setIsModalOpen={setIsModalOpen}
+        selectedFlight={selectedFlight}
+        setSelectedFlight={setSelectedFlight}
+      />
     </>
   );
 }

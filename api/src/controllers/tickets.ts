@@ -17,18 +17,12 @@ export const createTicket = async (req: Request, res: Response, next: NextFuncti
       throw res.status(404).send({ message: 'Flight not found' });
     }
 
-    const ticket = new TicketModel(
-      passenger_name,
-      passenger_surname,
-      passenger_email,
-      flight_id,
-      seat_number,
-    );
+    const ticket = new TicketModel(passenger_name, passenger_surname, passenger_email, flight_id);
 
     const newTicket = await create(ticket);
 
     res.status(201).send(newTicket);
-  } catch (error) {
+  } catch (error: any) {
     next(error);
   }
 };

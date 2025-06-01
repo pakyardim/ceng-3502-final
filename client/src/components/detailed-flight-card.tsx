@@ -10,9 +10,10 @@ interface Props {
   price: number;
   departure_time: string;
   arrival_time: string;
+  onSelectFlight: () => void;
 }
 
-export function DetailedFlightCard({ color, price, arrival_time, departure_time }: Props) {
+export function DetailedFlightCard({ color, price, arrival_time, departure_time, onSelectFlight }: Props) {
   const { time: departureTime } = extractDateAndTime(departure_time);
   const { time: arrivalTime } = extractDateAndTime(arrival_time);
 
@@ -85,6 +86,7 @@ export function DetailedFlightCard({ color, price, arrival_time, departure_time 
             </div>
 
             <Button
+              onClick={onSelectFlight}
               className={`w-full lg:w-auto bg-gradient-to-r ${color} hover:opacity-90 text-white shadow-md`}
             >
               Select Flight

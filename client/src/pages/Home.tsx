@@ -2,12 +2,18 @@ import { Button } from '@/components/ui/button';
 import { SearchForm } from '@/components/search';
 import { FlightCard } from '@/components/flight-card';
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
-import { fetchAllFlights } from '@/fetchers/flights';
+import { fetchAllFlights, type Flight } from '@/fetchers/flights';
 import { Spinner } from '@/components/ui/spinner';
 import { fetchCities } from '@/fetchers/cities';
+
 import { FLIGHT_COLORS } from '@/lib/utils';
+import { useState } from 'react';
+import { FlightDialog } from '@/components/flight-dialog';
 
 export default function Home() {
+  const [selectedFlight, setSelectedFlight] = useState<Flight | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const { data: citiesData } = useQuery({
     queryKey: ['cities'],
     queryFn: fetchCities,
@@ -23,6 +29,11 @@ export default function Home() {
       return lastPage.hasMore ? currentFlightCount : undefined;
     },
   });
+
+  const handleSelectFlight = (flight: Flight) => {
+    setSelectedFlight(flight);
+    setIsModalOpen(true);
+  };
 
   const cities = citiesData || [];
 
@@ -89,6 +100,7 @@ export default function Home() {
                 <FlightCard
                   key={flight.id}
                   color={FLIGHT_COLORS[flight.id % FLIGHT_COLORS.length]}
+                  onSelectFlight={() => handleSelectFlight(flight)}
                   {...flight}
                 />
               ))}
@@ -109,6 +121,13 @@ export default function Home() {
           )}
         </div>
       </section>
+
+      <FlightDialog
+        isModalOpen={isModalOpen}
+        setIsModalOpen={setIsModalOpen}
+        selectedFlight={selectedFlight}
+        setSelectedFlight={setSelectedFlight}
+      />
     </>
   );
 }

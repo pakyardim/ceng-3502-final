@@ -10,6 +10,7 @@ interface Props {
   from_city_name: string;
   departure_time: string;
   arrival_time: string;
+  onSelectFlight: () => void;
 }
 
 export function FlightCard({
@@ -19,6 +20,7 @@ export function FlightCard({
   from_city_name,
   departure_time,
   arrival_time,
+  onSelectFlight,
 }: Props) {
   const { date, time } = extractDateAndTime(departure_time);
   const duration = findTimeDifference(departure_time, arrival_time);
@@ -50,7 +52,10 @@ export function FlightCard({
               </div>
               <div className="text-xs text-gray-400">per person</div>
             </div>
-            <Button className={`md:ml-4 bg-gradient-to-r ${color} hover:opacity-90 text-white shadow-md`}>
+            <Button
+              onClick={onSelectFlight}
+              className={`md:ml-4 bg-gradient-to-r ${color} hover:opacity-90 text-white shadow-md`}
+            >
               Select Flight
             </Button>
           </div>

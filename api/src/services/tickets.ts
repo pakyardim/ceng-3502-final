@@ -7,11 +7,11 @@ interface ITicket extends Ticket, ResultSetHeader {}
 
 export const create = async (ticketData: Ticket) => {
   try {
-    const { passenger_name, passenger_surname, passenger_email, flight_id, seat_number } = ticketData;
+    const { passenger_name, passenger_surname, passenger_email, flight_id } = ticketData;
 
     const [result] = await pool.execute<ResultSetHeader>(
       'INSERT INTO tickets (passenger_name, passenger_surname, passenger_email, flight_id, seat_number) VALUES (?, ?, ?, ?, ?)',
-      [passenger_name, passenger_surname, passenger_email, flight_id, seat_number],
+      [passenger_name, passenger_surname, passenger_email, flight_id, null],
     );
 
     ticketData.id = result.insertId;
