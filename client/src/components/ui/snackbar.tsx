@@ -43,7 +43,7 @@ const Snackbar = ({ message, type, visible, onClose, duration = 3000 }: Snackbar
       <div className={cn('rounded-lg p-4 shadow-lg', bgColor)}>
         <div className="flex items-center justify-between">
           <div className="space-y-1">
-            <h3 className="text-sm font-medium text-primary">{message}</h3>
+            <h3 className="text-sm font-medium text-amber-100">{message}</h3>
           </div>
         </div>
       </div>

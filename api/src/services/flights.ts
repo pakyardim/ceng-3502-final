@@ -109,3 +109,27 @@ export const fetchFlightById = async (id: number) => {
   const [rows] = await pool.execute<IFlight[]>('SELECT * FROM flights WHERE id = ?', [id]);
   return rows[0];
 };
+
+export const fetchFlightsByDepartCityAndDate = async (from_city: number, departure_time: Date) => {
+  const [rows] = await pool.execute<IFlight[]>(
+    `
+    SELECT *
+    FROM flights
+    WHERE from_city = ? AND DATE(departure_time) = DATE(?)
+  `,
+    [from_city, departure_time],
+  );
+  return rows;
+};
+
+export const fetchFlightsByArriveCityAndDate = async (to_city: number, arrival_time: Date) => {
+  const [rows] = await pool.execute<IFlight[]>(
+    `
+    SELECT *
+    FROM flights
+    WHERE to_city = ? AND DATE(arrival_time) = DATE(?)
+  `,
+    [to_city, arrival_time],
+  );
+  return rows;
+};

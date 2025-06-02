@@ -11,9 +11,12 @@ import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { login } from '@/fetchers/login';
 import { useAuth } from '@/contexts/authContext';
+import { useNavigate } from 'react-router';
+import axios from 'axios';
 
 export default function AdminSignInPage() {
   const { setAuthToken } = useAuth();
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     username: '',
@@ -32,7 +35,10 @@ export default function AdminSignInPage() {
     mutationFn: login,
     retry: 1,
     onSuccess: (data) => {
+      axios.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
+      localStorage.setItem('authToken', data.token);
       setAuthToken(data.token);
+      navigate('/tickets', { replace: true });
     },
   });
 

@@ -2,13 +2,39 @@ import { Request, Response, NextFunction } from 'express';
 
 import { FlightModel } from '../models/flights';
 import { checkValidationError } from '../utils/validation';
-import { create, deleteFlightById, fetchFlights, update, fetchAllFlights } from '../services/flights';
+import {
+  create,
+  deleteFlightById,
+  fetchFlights,
+  update,
+  fetchAllFlights,
+  fetchFlightsByDepartCityAndDate,
+} from '../services/flights';
 
 export const createFlight = async (req: Request, res: Response, next: NextFunction) => {
   try {
     checkValidationError(req);
 
     const { price, seats_total, arrival_time, departure_time, from_city, to_city } = req.body;
+
+    if (from_city === to_city) {
+      throw res.status(400).send({ error: 'From city and To city cannot be the same.' });
+    }
+
+    const sameCityFlight = await fetchFlightsByDepartCityAndDate(from_city, new Date(departure_time));
+    if (sameCityFlight.length > 0) {
+      throw res.status(400).send({
+        error: `There is already a flight from ${from_city} at ${departure_time}.`,
+      });
+    }
+
+    const sameArrivalFlight = await fetchFlightsByDepartCityAndDate(to_city, new Date(arrival_time));
+
+    if (sameArrivalFlight.length > 0) {
+      throw res.status(400).send({
+        error: `There is already a flight to ${to_city} at ${arrival_time}.`,
+      });
+    }
 
     const flight = new FlightModel(
       price,

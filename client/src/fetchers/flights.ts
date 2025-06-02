@@ -29,3 +29,8 @@ export const fetchSearchFlights = async (searchParams: {
   });
   return response.data;
 };
+
+export const addFlight = async (flight: Omit<Flight, 'id'>) => {
+  const response = await axios.post('/flights', flight);
+  return response.data;
+};
